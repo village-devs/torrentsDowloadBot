@@ -1,14 +1,15 @@
-package com.georgyorlov.bot;
+package com.georgyorlov.torrentdownloader;
 
+import com.georgyorlov.torrentdownloader.bot.TorrentsDownloadBot;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.telegram.telegrambots.meta.TelegramBotsApi;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
 
-public class BotTelegramTorrent {
+public class Application {
 
-    private static Logger LOGGER = LoggerFactory.getLogger(BotTelegramTorrent.class);
+    private static Logger LOGGER = LoggerFactory.getLogger(Application.class);
 
     public static void main(String[] args) {
         try {

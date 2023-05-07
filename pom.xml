@@ -10,6 +10,7 @@
         <maven.compiler.target>17</maven.compiler.target>
         <bt-version>1.10</bt-version>
         <telegram-bot-api-version>6.5.0</telegram-bot-api-version>
+        <spring-boot-maven-plugin-version>3.0.2</spring-boot-maven-plugin-version>
     </properties>
 
     <dependencies>
@@ -53,7 +54,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>com.georgyorlov.bot.BotTelegramTorrent</mainClass>
+                            <mainClass>com.georgyorlov.torrentdownloader.Application</mainClass>
                         </manifest>
                     </archive>
                     <descriptorRefs>
@@ -69,6 +70,11 @@
                         </goals>
                     </execution>
                 </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <version>${spring-boot-maven-plugin-version}</version>
             </plugin>
         </plugins>
     </build>
