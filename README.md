@@ -1,2 +1,2 @@
 # torrentsDowloadBot
-est push
+test push
