@@ -1,6 +1,8 @@
 package com.georgyorlov.torrentdownloader.bot;
 
 import com.georgyorlov.torrentdownloader.command.DownloadCommand;
+
+import java.time.Instant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.telegram.telegrambots.extensions.bots.commandbot.TelegramLongPollingCommandBot;
@@ -31,9 +33,10 @@ public class TorrentsDownloadBot extends TelegramLongPollingCommandBot {
     @Override
     public void processNonCommandUpdate(Update update) {
         if (update.hasMessage() && update.getMessage().hasText()) {
-            LOGGER.info("User [{}] send message [{}]",
+            LOGGER.info("User [{}] send message [{}] at [{}]",
                     update.getMessage().getChat().getUserName(),
-                    update.getMessage().getText()
+                    update.getMessage().getText(),
+                    Instant.ofEpochSecond(update.getMessage().getDate()) //long()*1000
             );
             SendMessage message = new SendMessage();
             message.setChatId(update.getMessage().getChatId());
@@ -49,11 +52,11 @@ public class TorrentsDownloadBot extends TelegramLongPollingCommandBot {
 
     @Override
     public String getBotUsername() {
-        return System.getProperty("botUsername");
+        return System.getenv("botUsername");
     }
 
     @Override
     public String getBotToken() {
-        return System.getProperty("botToken");
+        return System.getenv("botToken");
     }
 }

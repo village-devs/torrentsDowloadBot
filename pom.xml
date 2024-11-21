@@ -6,14 +6,16 @@
     <version>1.0-SNAPSHOT</version>
 
     <properties>
-        <maven.compiler.source>11</maven.compiler.source>
-        <maven.compiler.target>11</maven.compiler.target>
+        <maven.compiler.source>21</maven.compiler.source>
+        <maven.compiler.target>21</maven.compiler.target>
         <bt-version>1.10</bt-version>
+
+        <!--UP???-->
         <telegram-bot-api-version>6.5.0</telegram-bot-api-version>
-        <spring-boot-maven-plugin-version>3.0.2</spring-boot-maven-plugin-version>
     </properties>
 
     <dependencies>
+        <!--BT-->
         <dependency>
             <groupId>com.github.atomashpolskiy</groupId>
             <artifactId>bt-core</artifactId>
@@ -34,12 +36,13 @@
             <artifactId>telegrambots</artifactId>
             <version>${telegram-bot-api-version}</version>
         </dependency>
+        <!--Telegram-->
         <dependency>
             <groupId>org.telegram</groupId>
             <artifactId>telegrambotsextensions</artifactId>
             <version>${telegram-bot-api-version}</version>
         </dependency>
-
+        <!--Logs-->
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-slf4j-impl</artifactId>
@@ -70,11 +73,6 @@
                         </goals>
                     </execution>
                 </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
-                <version>${spring-boot-maven-plugin-version}</version>
             </plugin>
         </plugins>
     </build>
