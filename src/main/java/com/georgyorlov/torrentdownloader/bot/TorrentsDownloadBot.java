@@ -3,6 +3,7 @@ package com.georgyorlov.torrentdownloader.bot;
 import com.georgyorlov.torrentdownloader.command.DownloadCommand;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.extensions.bots.commandbot.TelegramLongPollingCommandBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
@@ -10,13 +11,14 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import java.time.Instant;
 
+@Component
 public class TorrentsDownloadBot extends TelegramLongPollingCommandBot {
 
     private static Logger LOGGER = LoggerFactory.getLogger(TorrentsDownloadBot.class);
 
-    public TorrentsDownloadBot() {
+    public TorrentsDownloadBot(DownloadCommand downloadCommand) {
         super();
-        register(new DownloadCommand());
+        register(downloadCommand);
 /*        registerDefaultAction((absSender, message) -> {
             SendMessage commandUnknownMessage = new SendMessage();
             commandUnknownMessage.setChatId(message.getChatId());
