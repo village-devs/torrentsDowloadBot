@@ -15,11 +15,22 @@
     </properties>
 
     <dependencies>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter</artifactId>
+            <version>3.3.5</version>
+        </dependency>
         <!--BT-->
         <dependency>
             <groupId>com.github.atomashpolskiy</groupId>
             <artifactId>bt-core</artifactId>
             <version>${bt-version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-api</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>com.github.atomashpolskiy</groupId>
@@ -42,16 +53,15 @@
             <artifactId>telegrambotsextensions</artifactId>
             <version>${telegram-bot-api-version}</version>
         </dependency>
-        <!--Logs-->
-        <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-slf4j-impl</artifactId>
-            <version>2.20.0</version>
-        </dependency>
     </dependencies>
 
     <build>
         <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <version>3.4.0</version>
+            </plugin>
             <plugin>
                 <artifactId>maven-assembly-plugin</artifactId>
                 <configuration>
