@@ -3,11 +3,11 @@ spring:
     web-application-type: none
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:5432/postgres
+    url: jdbc:postgresql://${POSTGRES_HOST:localhost}:${POSTGRES_PORT:5432}/${POSTGRES_DB:postgres}
     username: postgres
     password: postgres
   jpa:
     database: postgresql
     show-sql: false
     hibernate:
-      ddl-auto: update
+      ddl-auto: create-drop
