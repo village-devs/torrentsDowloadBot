@@ -11,6 +11,9 @@ import bt.runtime.BtClient;
 import bt.runtime.BtRuntime;
 import bt.runtime.BtRuntimeBuilder;
 import bt.runtime.Config;
+import com.georgyorlov.torrentdownloader.user.UserService;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.extensions.bots.commandbot.commands.BotCommand;
 import org.telegram.telegrambots.meta.api.methods.send.SendDocument;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -23,14 +26,21 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static java.lang.String.format;
 
+@Slf4j
+@Component
 public class DownloadCommand extends BotCommand {
 
-    public DownloadCommand() {
+    private final UserService userService;
+
+    public DownloadCommand(UserService userService) {
         super("download", "command for download by magnet uri");
+        this.userService = userService;
     }
 
     private static final long MAX_SIZE = 3l * 1024 * 1024 * 1024;
@@ -55,7 +65,10 @@ public class DownloadCommand extends BotCommand {
     //todo: spagetti code - need refactoring
     @Override
     public void execute(AbsSender absSender, User user, Chat chat, String[] strings) {
+        userService.createAndSaveUser(user.getUserName(), chat.getId(), Arrays.stream(strings).collect(Collectors.joining(";;;")));
+        log.info(" {} - {}", user.getUserName(), chat.getId().toString());
         //strings -> arguments with magnet link
+        //TODO: don't download here - start async somewhere else
         if (strings.length == 1) { //wait only one magnet link
             String magnetUrl = strings[0];
             Path targetDirectory = Paths.get("");//./files -> volume outside of docker container

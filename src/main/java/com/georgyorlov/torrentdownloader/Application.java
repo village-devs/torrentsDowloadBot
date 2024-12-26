@@ -16,14 +16,9 @@ public class Application {
     }
 
     @Bean
-    public TorrentsDownloadBot getTorrentsDownloadBot() {
-        return new TorrentsDownloadBot();
-    }
-
-    @Bean
-    public TelegramBotsApi telegramBotsApi() throws TelegramApiException {
+    public TelegramBotsApi telegramBotsApi(TorrentsDownloadBot torrentsDownloadBot) throws TelegramApiException {
         TelegramBotsApi botsApi = new TelegramBotsApi(DefaultBotSession.class);
-        botsApi.registerBot(getTorrentsDownloadBot());
+        botsApi.registerBot(torrentsDownloadBot);
         return botsApi;
     }
 }
