@@ -17,6 +17,10 @@
 
     <dependencies>
         <!--spring-boot-->
+        <!--
+        if you delete spring-boot-starter,
+        move application.yaml to application.properties
+        -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter</artifactId>

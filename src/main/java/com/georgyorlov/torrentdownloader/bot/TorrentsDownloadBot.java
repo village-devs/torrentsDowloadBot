@@ -1,6 +1,8 @@
 package com.georgyorlov.torrentdownloader.bot;
 
 import com.georgyorlov.torrentdownloader.command.DownloadCommand;
+import com.georgyorlov.torrentdownloader.command.StartCommand;
+import com.georgyorlov.torrentdownloader.command.StopCommand;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -16,9 +18,11 @@ public class TorrentsDownloadBot extends TelegramLongPollingCommandBot {
 
     private static Logger LOGGER = LoggerFactory.getLogger(TorrentsDownloadBot.class);
 
-    public TorrentsDownloadBot(DownloadCommand downloadCommand) {
+    public TorrentsDownloadBot(DownloadCommand downloadCommand,
+                               StartCommand startCommand,
+                               StopCommand stopCommand) {
         super();
-        register(downloadCommand);
+        registerAll(downloadCommand, startCommand, stopCommand);
 /*        registerDefaultAction((absSender, message) -> {
             SendMessage commandUnknownMessage = new SendMessage();
             commandUnknownMessage.setChatId(message.getChatId());
