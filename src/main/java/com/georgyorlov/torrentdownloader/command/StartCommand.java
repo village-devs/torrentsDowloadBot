@@ -11,22 +11,23 @@ import org.telegram.telegrambots.meta.bots.AbsSender;
 
 @Slf4j
 @Component
-public class StopCommand extends BotCommand {
+public class StartCommand extends BotCommand {
 
     private final TelegramUserService telegramUserService;
 
-    public StopCommand(TelegramUserService telegramUserService) {
-        super("stop", "delete info about user and chat");
+    public StartCommand(TelegramUserService telegramUserService) {
+        super("start", "save user and chat_id for future downloads");
         this.telegramUserService = telegramUserService;
     }
 
     @Override
     public void execute(AbsSender absSender, User user, Chat chat, String[] strings) {
-        telegramUserService.deleteUserByName(user.getUserName());
+        telegramUserService.createAndSaveUser(user.getUserName(), chat.getId());
+        log.info("new user [{}] saved", user.getUserName());
         try {
             SendMessage sendMessage = new SendMessage();
-            sendMessage.setChatId(chat.getId().toString());
-            sendMessage.setText("Bye bye");
+            sendMessage.setChatId(chat.getId());
+            sendMessage.setText("Thanks and welcome to using bot.");
             absSender.execute(sendMessage);
         } catch (Exception e) {
             log.error(e.getMessage(), e);

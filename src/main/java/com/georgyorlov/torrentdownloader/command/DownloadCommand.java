@@ -11,7 +11,8 @@ import bt.runtime.BtClient;
 import bt.runtime.BtRuntime;
 import bt.runtime.BtRuntimeBuilder;
 import bt.runtime.Config;
-import com.georgyorlov.torrentdownloader.user.UserService;
+import com.georgyorlov.torrentdownloader.user.TelegramUser;
+import com.georgyorlov.torrentdownloader.user.TelegramUserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.extensions.bots.commandbot.commands.BotCommand;
@@ -26,9 +27,7 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static java.lang.String.format;
 
@@ -36,14 +35,15 @@ import static java.lang.String.format;
 @Component
 public class DownloadCommand extends BotCommand {
 
-    private final UserService userService;
+    private final TelegramUserService telegramUserService;
 
-    public DownloadCommand(UserService userService) {
+    public DownloadCommand(TelegramUserService telegramUserService) {
         super("download", "command for download by magnet uri");
-        this.userService = userService;
+        this.telegramUserService = telegramUserService;
     }
 
     private static final long MAX_SIZE = 3l * 1024 * 1024 * 1024;
+    private static final String DEFAULT_FOLDER = "./files/";
     //private final ConcurrentMap<String, BtClient> clients = new ConcurrentHashMap();
     private final BtRuntime runtime = new BtRuntimeBuilder()
             .config(new Config() {
@@ -65,13 +65,27 @@ public class DownloadCommand extends BotCommand {
     //todo: spagetti code - need refactoring
     @Override
     public void execute(AbsSender absSender, User user, Chat chat, String[] strings) {
-        userService.createAndSaveUser(user.getUserName(), chat.getId(), Arrays.stream(strings).collect(Collectors.joining(";;;")));
-        log.info(" {} - {}", user.getUserName(), chat.getId().toString());
+        //move to start command.
+        //if user don;t start don't download until
+
+        TelegramUser telegramUser = telegramUserService.findUserByName(user.getUserName());
+        if (telegramUser == null) {
+            try {
+                SendMessage sendMessage = new SendMessage();
+                sendMessage.setChatId(chat.getId().toString());
+                sendMessage.setText("You are not found. Do /start before using bot.");
+                absSender.execute(sendMessage);
+            } catch (Exception e) {
+                log.error(e.getMessage(), e);
+            } finally {
+                return;
+            }
+        }
         //strings -> arguments with magnet link
         //TODO: don't download here - start async somewhere else
         if (strings.length == 1) { //wait only one magnet link
             String magnetUrl = strings[0];
-            Path targetDirectory = Paths.get("");//./files -> volume outside of docker container
+            Path targetDirectory = Paths.get(DEFAULT_FOLDER);//./files -> volume outside of docker container
             Storage storage = new FileSystemStorage(targetDirectory);
 
             BtClient client = Bt.client(runtime)
@@ -99,7 +113,9 @@ public class DownloadCommand extends BotCommand {
                         client.toString(),
                         state.getPiecesRemaining(),
                         state.getDownloaded(),
-                        state.getConnectedPeers().stream().map(k -> k.getPeer().getInetAddress().getHostAddress()).reduce("", (s, inetAddress) -> s + " " + inetAddress)));
+                        state.getConnectedPeers().stream()
+                                .map(k -> k.getPeer().getInetAddress().getHostAddress())
+                                .reduce("", (s, inetAddress) -> s + " " + inetAddress)));
             }, 5000);
         } else {
             throw new RuntimeException("More than 1 argument. Stop.");
@@ -112,7 +128,9 @@ public class DownloadCommand extends BotCommand {
         final List<TorrentFile> files = torrent.getFiles();
         files.forEach(torrentFile -> {
             final List<String> pathElements = torrentFile.getPathElements();
-            File file = new File(pathElements.stream().findFirst().get());
+            //for one file. if there are dirs -> fix me
+            //try - catch to delete all context
+            File file = new File(DEFAULT_FOLDER + pathElements.stream().findFirst().get());
             //check file exist (dir or not, one file or not)
             InputFile inputFile = new InputFile();
             inputFile.setMedia(file);
