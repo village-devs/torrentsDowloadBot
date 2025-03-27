@@ -1,0 +1,13 @@
+services:
+  postgres:
+    image: postgres:17-alpine
+    container_name: bot-postgres
+    restart: unless-stopped
+    ports:
+      - 15432:5432
+    volumes:
+      - bot-postgres-db:/var/lib/postgresql/data
+    env_file:
+      - default.env
+volumes:
+  bot-postgres-db:
