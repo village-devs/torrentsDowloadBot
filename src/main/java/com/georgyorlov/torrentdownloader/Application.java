@@ -5,20 +5,24 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
-import org.telegram.telegrambots.meta.TelegramBotsApi;
+import org.springframework.scheduling.annotation.EnableScheduling;
+import org.telegram.telegrambots.longpolling.TelegramBotsLongPollingApplication;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
-import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
+@EnableScheduling
 @SpringBootApplication
 public class Application {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws TelegramApiException {
         SpringApplication.run(Application.class, args);
+/*
+        TelegramBotsLongPollingApplication botsApplication = new TelegramBotsLongPollingApplication();
+        botsApplication.registerBot(new TorrentsDownloadBot());*/
 
         ScheduledExecutorService executorService = Executors.newScheduledThreadPool(1);
         executorService.scheduleAtFixedRate(
@@ -30,9 +34,9 @@ public class Application {
     }
 
     @Bean
-    public TelegramBotsApi telegramBotsApi(TorrentsDownloadBot torrentsDownloadBot) throws TelegramApiException {
-        TelegramBotsApi botsApi = new TelegramBotsApi(DefaultBotSession.class);
-        botsApi.registerBot(torrentsDownloadBot);
+    public TelegramBotsLongPollingApplication telegramBotsApi(TorrentsDownloadBot torrentsDownloadBot) throws TelegramApiException {
+        TelegramBotsLongPollingApplication botsApi = new TelegramBotsLongPollingApplication();
+        botsApi.registerBot(System.getenv("botToken"), torrentsDownloadBot);
         return botsApi;
     }
 }

@@ -4,7 +4,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface TelegramUserRepository extends JpaRepository<TelegramUser, Long> {
 
-    TelegramUser findByName(String name);
+    TelegramUser findByUserName(String userName);
 
-    void deleteByName(String name);
+    void deleteByUserName(String nickname);
 }

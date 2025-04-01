@@ -5,9 +5,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.extensions.bots.commandbot.commands.BotCommand;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
-import org.telegram.telegrambots.meta.api.objects.Chat;
 import org.telegram.telegrambots.meta.api.objects.User;
-import org.telegram.telegrambots.meta.bots.AbsSender;
+import org.telegram.telegrambots.meta.api.objects.chat.Chat;
+import org.telegram.telegrambots.meta.generics.TelegramClient;
 
 @Slf4j
 @Component
@@ -21,16 +21,28 @@ public class StartCommand extends BotCommand {
     }
 
     @Override
-    public void execute(AbsSender absSender, User user, Chat chat, String[] strings) {
-        telegramUserService.createAndSaveUser(user.getUserName(), chat.getId());
-        log.info("new user [{}] saved", user.getUserName());
+    public void execute(TelegramClient telegramClient, User user, Chat chat, String[] strings) {
+        //check user existence
+
+        //send data event to download and user services
         try {
-            SendMessage sendMessage = new SendMessage();
-            sendMessage.setChatId(chat.getId());
-            sendMessage.setText("Thanks and welcome to using bot.");
-            absSender.execute(sendMessage);
+            telegramUserService.createAndSaveUser(user.getId(), user.getUserName(), chat.getId());
+            log.info("new user [{}] saved", user.getUserName());
+            try {
+                SendMessage sendMessage = new SendMessage(chat.getId().toString(), "Thanks and welcome to using bot.");
+
+                telegramClient.execute(sendMessage);
+            } catch (Exception e) {
+                log.error(e.getMessage(), e);
+            }
         } catch (Exception e) {
             log.error(e.getMessage(), e);
+            try {
+                SendMessage sendMessage = new SendMessage(chat.getId().toString(), "Sorry an error has happened");
+                telegramClient.execute(sendMessage);
+            } catch (Exception ex) {
+                log.error(ex.getMessage(), ex);
+            }
         }
     }
 }

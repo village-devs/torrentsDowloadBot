@@ -3,25 +3,26 @@ package com.georgyorlov.torrentdownloader.bot;
 import com.georgyorlov.torrentdownloader.command.DownloadCommand;
 import com.georgyorlov.torrentdownloader.command.StartCommand;
 import com.georgyorlov.torrentdownloader.command.StopCommand;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-import org.telegram.telegrambots.extensions.bots.commandbot.TelegramLongPollingCommandBot;
+import org.telegram.telegrambots.client.okhttp.OkHttpTelegramClient;
+import org.telegram.telegrambots.extensions.bots.commandbot.CommandLongPollingTelegramBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import java.time.Instant;
 
+@Slf4j
 @Component
-public class TorrentsDownloadBot extends TelegramLongPollingCommandBot {
+public class TorrentsDownloadBot extends CommandLongPollingTelegramBot {
 
-    private static Logger LOGGER = LoggerFactory.getLogger(TorrentsDownloadBot.class);
 
     public TorrentsDownloadBot(DownloadCommand downloadCommand,
                                StartCommand startCommand,
                                StopCommand stopCommand) {
-        super();
+        super(new OkHttpTelegramClient(System.getenv("botToken")), true, () -> System.getenv("botUsername"));
         registerAll(downloadCommand, startCommand, stopCommand);
 /*        registerDefaultAction((absSender, message) -> {
             SendMessage commandUnknownMessage = new SendMessage();
@@ -39,31 +40,25 @@ public class TorrentsDownloadBot extends TelegramLongPollingCommandBot {
     @Override
     public void processNonCommandUpdate(Update update) {
         if (update.hasMessage() && update.getMessage().hasText()) {
-            LOGGER.info("User [{}] chatId [{}] send message [{}] at [{}]",
+            log.info("User [{}] chatId [{}] send message [{}] at [{}]",
                     update.getMessage().getChat().getUserName(),
                     update.getMessage().getChat().getId(),
                     update.getMessage().getText(),
                     Instant.ofEpochSecond(update.getMessage().getDate()) //long()*1000
             );
-            SendMessage message = new SendMessage();
-            message.setChatId(update.getMessage().getChatId());
-            message.setText("Bot is under construction. Sorry for the inconvenience");
+            SendMessage message = new SendMessage(update.getMessage().getChatId().toString(), "Bot is under construction. Sorry for the inconvenience");
 
             try {
-                execute(message);
+                telegramClient.execute(message);
             } catch (TelegramApiException e) {
                 //todo
             }
         }
     }
 
-    @Override
-    public String getBotUsername() {
-        return System.getenv("botUsername");
+    @Scheduled(cron = "0 * * * * *")
+    public void test() throws TelegramApiException {
+        telegramClient.execute(SendMessage.builder().chatId(66580861L).text("kek").build());
     }
 
-    @Override
-    public String getBotToken() {
-        return System.getenv("botToken");
-    }
 }

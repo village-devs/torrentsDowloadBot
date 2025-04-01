@@ -11,8 +11,10 @@
         <bt-version>1.10</bt-version>
 
         <!--UP???-->
-        <telegram-bot-api-version>6.5.0</telegram-bot-api-version>
+        <telegram-bot-api-version>8.2.0</telegram-bot-api-version>
         <spring-boot.vertion>3.3.5</spring-boot.vertion>
+        <flyway.version>10.16.0</flyway.version>
+        <postgresql.version>42.7.4</postgresql.version>
     </properties>
 
     <dependencies>
@@ -31,20 +33,24 @@
             <artifactId>spring-boot-starter-data-jpa</artifactId>
             <version>${spring-boot.vertion}</version>
         </dependency>
-        <!--Caused by: java.lang.NoClassDefFoundError: javax/xml/bind/annotation/XmlElement-->
-        <dependency>
-            <groupId>javax.xml.bind</groupId>
-            <artifactId>jaxb-api</artifactId>
-            <version>2.3.1</version>
-        </dependency>
         <!--db-->
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
-            <version>42.7.4</version>
+            <version>${postgresql.version}</version>
             <scope>runtime</scope>
         </dependency>
-        <!--BT-->
+        <dependency>
+            <groupId>org.flywaydb</groupId>
+            <artifactId>flyway-core</artifactId>
+            <version>${flyway.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.flywaydb</groupId>
+            <artifactId>flyway-database-postgresql</artifactId>
+            <version>${flyway.version}</version>
+        </dependency>
+        <!--BitTorrent-->
         <dependency>
             <groupId>com.github.atomashpolskiy</groupId>
             <artifactId>bt-core</artifactId>
@@ -66,15 +72,25 @@
             <artifactId>bt-dht</artifactId>
             <version>${bt-version}</version>
         </dependency>
-        <!--Telegram-->
+        <!--telegram bot api-->
         <dependency>
             <groupId>org.telegram</groupId>
-            <artifactId>telegrambotsextensions</artifactId>
+            <artifactId>telegrambots-longpolling</artifactId>
             <version>${telegram-bot-api-version}</version>
         </dependency>
         <dependency>
             <groupId>org.telegram</groupId>
-            <artifactId>telegrambots</artifactId>
+            <artifactId>telegrambots-webhook</artifactId>
+            <version>${telegram-bot-api-version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.telegram</groupId>
+            <artifactId>telegrambots-client</artifactId>
+            <version>${telegram-bot-api-version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.telegram</groupId>
+            <artifactId>telegrambots-extensions</artifactId>
             <version>${telegram-bot-api-version}</version>
         </dependency>
         <!--lombok-->
@@ -82,6 +98,12 @@
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <version>1.18.34</version>
+        </dependency>
+        <!--Caused by: java.lang.NoClassDefFoundError: javax/xml/bind/annotation/XmlElement-->
+        <dependency>
+            <groupId>javax.xml.bind</groupId>
+            <artifactId>jaxb-api</artifactId>
+            <version>2.3.1</version>
         </dependency>
     </dependencies>
 
